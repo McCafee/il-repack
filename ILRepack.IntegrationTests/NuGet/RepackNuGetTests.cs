@@ -137,6 +137,7 @@ namespace ILRepack.IntegrationTests.NuGet
         }
 
         [Test]
+        [Ignore("Disabled because of the location SourceLink package")]
         [Platform(Include = "win")]
         public void VerifiesMergedPdbKeepSourceIndexationForHttpIndexation()
         {
@@ -164,6 +165,7 @@ namespace ILRepack.IntegrationTests.NuGet
 
         private static IEnumerable<string> GetSourceLinks(string pdbName)
         {
+           
             var processInfo = new ProcessStartInfo
                               {
                                   CreateNoWindow = true,

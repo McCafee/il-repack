@@ -143,6 +143,7 @@ namespace ILRepacking
         }
 
         internal bool ShouldShowUsage => cmd.Modifier("?") || cmd.Modifier("help") || cmd.Modifier("h") || cmd.HasNoOptions;
+        public bool MoveMergedTypesToNewNamespace { get; set; }
 
         void Parse()
         {

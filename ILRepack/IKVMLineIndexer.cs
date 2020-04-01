@@ -57,12 +57,11 @@ namespace ILRepacking
             }
         }
 
-        public void ProcessMethodBodyInstruction(Instruction instr)
+        public void ProcessMethodBodyInstruction(Instruction instr, SequencePoint currentSeqPoint)
         {
             if (!enabled)
                 return;
 
-            var currentSeqPoint = instr.SequencePoint;
             if (lineNumberWriter != null && currentSeqPoint != null)
             {
                 if (fileName == null && currentSeqPoint.Document != null)
@@ -155,7 +154,7 @@ namespace ILRepacking
             IMetadataScope ikvmRuntimeReference = repack.TargetAssemblyMainModule.AssemblyReferences.FirstOrDefault(r => r.Name == "IKVM.Runtime");
             if (ikvmRuntimeReference == null)
             {
-                ikvmRuntimeReference = repack.MergeScope(repack.GlobalAssemblyResolver.Resolve("IKVM.Runtime").Name);
+                ikvmRuntimeReference = repack.MergeScope(repack.GlobalAssemblyResolver.Resolve(new AssemblyNameReference("IKVM.Runtime", new Version())).Name);
             }
             if (ikvmRuntimeReference == null)
             {
@@ -165,13 +164,13 @@ namespace ILRepacking
             {
                 sourceFileAttributeTypeReference = new TypeReference("IKVM.Attributes", "SourceFileAttribute", TargetAssemblyMainModule, ikvmRuntimeReference);
                 sourceFileAttributeConstructor = new MethodReference(".ctor", TargetAssemblyMainModule.TypeSystem.Void, sourceFileAttributeTypeReference)
-                                                     {HasThis = true, Parameters = {new ParameterDefinition(TargetAssemblyMainModule.TypeSystem.String)}};
+                { HasThis = true, Parameters = { new ParameterDefinition(TargetAssemblyMainModule.TypeSystem.String) } };
 
                 lineNumberTableAttributeTypeReference = new TypeReference("IKVM.Attributes", "LineNumberTableAttribute", TargetAssemblyMainModule, ikvmRuntimeReference);
                 lineNumberTableAttributeConstructor1 = new MethodReference(".ctor", TargetAssemblyMainModule.TypeSystem.Void, lineNumberTableAttributeTypeReference)
-                                                           {HasThis = true, Parameters = {new ParameterDefinition(TargetAssemblyMainModule.TypeSystem.UInt16)}};
+                { HasThis = true, Parameters = { new ParameterDefinition(TargetAssemblyMainModule.TypeSystem.UInt16) } };
                 lineNumberTableAttributeConstructor2 = new MethodReference(".ctor", TargetAssemblyMainModule.TypeSystem.Void, lineNumberTableAttributeTypeReference)
-                                                           {HasThis = true, Parameters = {new ParameterDefinition(new ArrayType(TargetAssemblyMainModule.TypeSystem.Byte))}};
+                { HasThis = true, Parameters = { new ParameterDefinition(new ArrayType(TargetAssemblyMainModule.TypeSystem.Byte)) } };
             }
         }
     }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ILRepack.Tests</RootNamespace>
     <AssemblyName>ILRepack.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_unix|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -38,24 +40,12 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BamlParser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BamlParser.1.0.0\lib\net35\BamlParser.dll</HintPath>
-    </Reference>
-    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
-      <HintPath>..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Moq">
-      <HintPath>..\packages\Moq.4.2.1409.1722\lib\net40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" Condition=" '$(Configuration)' != 'Debug_unix' " />
-    <Reference Include="PresentationFramework" Condition=" '$(Configuration)' != 'Debug_unix' " />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
@@ -80,15 +70,6 @@
     <Compile Include="Utils\BamlDocumentMatcher.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
-      <Project>{d68133bd-1e63-496e-9ede-4fbdbf77b486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ILRepack.IntegrationTests\Scenarios\ClassLibrary\ClassLibrary.csproj">
       <Project>{801489b7-46cb-42d0-8581-0120f3566a8f}</Project>
       <Name>ClassLibrary</Name>
@@ -102,39 +83,31 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Resources\BamlGeneration\GenericXaml\EmptyResourceDictionary\End.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\BamlGeneration\GenericXaml\ExistingMergedDictionaries\Start.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\BamlGeneration\GenericXaml\ExistingMergedDictionaries\End.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\BamlGeneration\GenericXaml\NonExistingMergedDictionaries\End.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\BamlGeneration\GenericXaml\NonExistingMergedDictionaries\Start.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\BamlGeneration\GenericXaml\EmptyResourceDictionary\Start.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\BamlGeneration\GenericXaml\Sample.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\BamlGeneration\GenericXaml\NonResourceDictionary.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
+    <Content Include="Resources\BamlGeneration\GenericXaml\EmptyResourceDictionary\End.xaml" />
+    <Content Include="Resources\BamlGeneration\GenericXaml\ExistingMergedDictionaries\Start.xaml" />
+    <Content Include="Resources\BamlGeneration\GenericXaml\ExistingMergedDictionaries\End.xaml" />
+    <Content Include="Resources\BamlGeneration\GenericXaml\NonExistingMergedDictionaries\End.xaml" />
+    <Content Include="Resources\BamlGeneration\GenericXaml\NonExistingMergedDictionaries\Start.xaml" />
+    <Content Include="Resources\BamlGeneration\GenericXaml\EmptyResourceDictionary\Start.xaml" />
+    <Content Include="Resources\BamlGeneration\GenericXaml\Sample.xaml" />
+    <Content Include="Resources\BamlGeneration\GenericXaml\NonResourceDictionary.xaml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="BamlParser">
+      <Version>1.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="fasterflect">
+      <Version>2.1.3</Version>
+    </PackageReference>
+    <PackageReference Include="FodyHelpers">
+      <Version>6.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Moq">
+      <Version>4.2.1409.1722</Version>
+    </PackageReference>
+    <PackageReference Include="NUnit">
+      <Version>2.6.4</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

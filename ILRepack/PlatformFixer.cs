@@ -18,6 +18,7 @@ using Mono.Cecil;
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 
 namespace ILRepacking
 {
@@ -191,8 +192,10 @@ namespace ILRepacking
 
         private void FixPlatformVersion(GenericParameter gp)
         {
+            var constraintTypeReferences = gp.Constraints.Select(c => c.ConstraintType);
+
             if (gp.HasConstraints)
-                foreach (TypeReference tr in gp.Constraints)
+                foreach (TypeReference tr in constraintTypeReferences)
                     FixPlatformVersion(tr);
             if (gp.HasCustomAttributes)
                 foreach (CustomAttribute ca in gp.CustomAttributes)
