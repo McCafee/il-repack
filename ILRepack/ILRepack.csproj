@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0; net40</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>ILRepacking</RootNamespace>
     <AssemblyName>ILRepack</AssemblyName>
@@ -42,10 +42,8 @@
   <ItemGroup>
     <PackageReference Include="BamlParser" Version="1.0.0" />
     <PackageReference Include="Fasterflect.Netstandard" Version="1.*" />
-    <PackageReference Include="FodyHelpers" Version="6.1.0" />
+    <PackageReference Condition="$(TargetFramework)=='netstandard2.0'" Include="FodyHelpers" Version="6.1.1" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Mono.Posix-4.5" Version="4.5.0" />
     <PackageReference Include="SourceLink" Version="1.1.0" />
   </ItemGroup>
 
@@ -55,5 +53,13 @@
 
   <ItemGroup>
     <EmbeddedResource Include="$(NuGetPackageRoot)\sourceLink\1.1.0\tools\pdbstr.exe" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework)=='net40'">
+    <ProjectReference Include="..\cecil\Mono.Cecil.csproj">
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\cecil\symbols\mdb\Mono.Cecil.Mdb.csproj" />
+    <ProjectReference Include="..\cecil\symbols\pdb\Mono.Cecil.Pdb.csproj" />
   </ItemGroup>
 </Project>

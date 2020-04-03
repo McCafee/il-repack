@@ -20,7 +20,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using StrongNameKeyPair = Mono.Cecil.StrongNameKeyPair;
+
+using StrongNameKeyPair = System.Reflection.StrongNameKeyPair;
 
 namespace ILRepacking.Steps
 {
@@ -41,42 +42,42 @@ namespace ILRepacking.Steps
 
         public void Perform()
         {
-            // if (_repackOptions.KeyContainer != null || (_repackOptions.KeyFile != null && File.Exists(_repackOptions.KeyFile)))
-            // {
-            //     var snkp = default(StrongNameKeyPair);
-            //     var publicKey = default(byte[]);
-            //     if (_repackOptions.KeyContainer != null)
-            //     {
-            //         snkp = new StrongNameKeyPair(_repackOptions.KeyContainer);
-            //     }
-            //     else if(_repackOptions.KeyFile != null && File.Exists(_repackOptions.KeyFile))
-            //     {
-            //         var keyFileContents = File.ReadAllBytes(_repackOptions.KeyFile);
-            //         try
-            //         {
-            //             snkp = new StrongNameKeyPair(keyFileContents);
-            //             publicKey = snkp.PublicKey;
-            //         }
-            //         catch (ArgumentException)
-            //         {
-            //             snkp = null;
-            //             if(_repackOptions.DelaySign)
-            //             {
-            //                 publicKey = keyFileContents;
-            //             }
-            //         }
-            //     }
-            //     _repackContext.TargetAssemblyDefinition.Name.PublicKey = publicKey;
-            //     _repackContext.TargetAssemblyDefinition.Name.Attributes |= AssemblyAttributes.PublicKey;
-            //     _repackContext.TargetAssemblyMainModule.Attributes |= ModuleAttributes.StrongNameSigned;
-            //     if (!_repackOptions.DelaySign)
-            //         KeyPair = snkp;
-            // }
-            // else
-            // {
-            //     _repackContext.TargetAssemblyDefinition.Name.PublicKey = null;
-            //     _repackContext.TargetAssemblyMainModule.Attributes &= ~ModuleAttributes.StrongNameSigned;
-            // }
+            if (_repackOptions.KeyContainer != null || (_repackOptions.KeyFile != null && File.Exists(_repackOptions.KeyFile)))
+            {
+                var snkp = default(StrongNameKeyPair);
+                var publicKey = default(byte[]);
+                if (_repackOptions.KeyContainer != null)
+                {
+                    snkp = new StrongNameKeyPair(_repackOptions.KeyContainer);
+                }
+                else if(_repackOptions.KeyFile != null && File.Exists(_repackOptions.KeyFile))
+                {
+                    var keyFileContents = File.ReadAllBytes(_repackOptions.KeyFile);
+                    try
+                    {
+                        snkp = new StrongNameKeyPair(keyFileContents);
+                        publicKey = snkp.PublicKey;
+                    }
+                    catch (ArgumentException)
+                    {
+                        snkp = null;
+                        if(_repackOptions.DelaySign)
+                        {
+                            publicKey = keyFileContents;
+                        }
+                    }
+                }
+                _repackContext.TargetAssemblyDefinition.Name.PublicKey = publicKey;
+                _repackContext.TargetAssemblyDefinition.Name.Attributes |= AssemblyAttributes.PublicKey;
+                _repackContext.TargetAssemblyMainModule.Attributes |= ModuleAttributes.StrongNameSigned;
+                if (!_repackOptions.DelaySign)
+                    KeyPair = snkp;
+            }
+            else
+            {
+                _repackContext.TargetAssemblyDefinition.Name.PublicKey = null;
+                _repackContext.TargetAssemblyMainModule.Attributes &= ~ModuleAttributes.StrongNameSigned;
+            }
         }
     }
 }

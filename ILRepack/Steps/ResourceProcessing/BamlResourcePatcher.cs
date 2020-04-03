@@ -47,7 +47,7 @@ namespace ILRepacking.Steps.ResourceProcessing
         {
             BamlDocument bamlDocument = BamlUtils.FromResourceBytes(resource.data);
 
-            foreach (dynamic node in bamlDocument)
+            foreach (var node in bamlDocument)
             {
                 ProcessRecord(node, containingAssembly);
             }

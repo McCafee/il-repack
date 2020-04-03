@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using ILRepacking.Steps;
 using Mono.Cecil;
 using Mono.Cecil.PE;
-using Mono.Unix.Native;
 using ILRepacking.Mixins;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
@@ -339,8 +338,10 @@ namespace ILRepacking
 
                 var parameters = new WriterParameters
                 {
+#if !NETSTANDARD
                     StrongNameKeyPair = signingStep.KeyPair,
-                    WriteSymbols = Options.DebugInfo
+#endif
+                    WriteSymbols = Options.DebugInfo,
                 };
                 // create output directory if it does not exist
                 var outputDir = Path.GetDirectoryName(Options.OutputFile);
@@ -357,13 +358,7 @@ namespace ILRepacking
                 Logger.Info("Writing output assembly to disk");
                 // If this is an executable and we are on linux/osx we should copy file permissions from
                 // the primary assembly
-                if (isUnixEnvironment)
-                {
-                    Stat stat;
-                    Logger.Info("Copying permissions from " + PrimaryAssemblyFile);
-                    Syscall.stat(PrimaryAssemblyFile, out stat);
-                    Syscall.chmod(Options.OutputFile, stat.st_mode);
-                }
+                
                 if (hadStrongName && !TargetAssemblyDefinition.Name.HasPublicKey)
                     Options.StrongNameLost = true;
 

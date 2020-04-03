@@ -57,10 +57,14 @@ namespace ILRepacking
             }
         }
 
-        public void ProcessMethodBodyInstruction(Instruction instr, SequencePoint currentSeqPoint)
+        public void ProcessMethodBodyInstruction(Instruction instr, SequencePoint currentSeqPoint = null)
         {
             if (!enabled)
                 return;
+
+#if !NETSTANDARD
+            currentSeqPoint = instr.SequencePoint;
+#endif
 
             if (lineNumberWriter != null && currentSeqPoint != null)
             {

@@ -69,8 +69,14 @@ namespace ILRepacking.Steps
 
         private void PatchIComponentConnector(TypeDefinition type)
         {
+
+#if !NETSTANDARD
+             if (type.Interfaces.All(t => t.FullName != "System.Windows.Markup.IComponentConnector"))
+                            return;
+#else
             if (type.Interfaces.All(t => t.InterfaceType.FullName != "System.Windows.Markup.IComponentConnector"))
                 return;
+#endif
 
             var initializeMethod = type.Methods.FirstOrDefault(m =>
                 m.Name == "InitializeComponent" && m.Parameters.Count == 0);

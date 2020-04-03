@@ -192,11 +192,19 @@ namespace ILRepacking
 
         private void FixPlatformVersion(GenericParameter gp)
         {
-            var constraintTypeReferences = gp.Constraints.Select(c => c.ConstraintType);
 
+
+#if !NETSTANDARD
+             if (gp.HasConstraints)
+                foreach (TypeReference tr in gp.Constraints)
+                    FixPlatformVersion(tr);
+
+#else
+            var constraintTypeReferences = gp.Constraints.Select(c => c.ConstraintType);
             if (gp.HasConstraints)
                 foreach (TypeReference tr in constraintTypeReferences)
                     FixPlatformVersion(tr);
+#endif
             if (gp.HasCustomAttributes)
                 foreach (CustomAttribute ca in gp.CustomAttributes)
                     FixPlatformVersion(ca);

@@ -456,8 +456,12 @@ namespace ILRepacking
             _repackContext.LineIndexer.PreMethodBodyRepack(body, parent);
             foreach (Instruction instr in body.Instructions)
             {
+#if !NETSTANDARD
+                _repackContext.LineIndexer.ProcessMethodBodyInstruction(instr);
+#else
                 SequencePoint seqPoint = parent.DebugInformation.GetSequencePoint(instr);
                 _repackContext.LineIndexer.ProcessMethodBodyInstruction(instr, seqPoint);
+#endif
 
                 Instruction ni;
 
@@ -839,6 +843,7 @@ namespace ILRepacking
             }
         }
 
+#if NETSTANDARD
         public void CopyTypeReferences(Collection<InterfaceImplementation> input, Collection<InterfaceImplementation> output, IGenericParameterProvider context)
         {
             foreach (InterfaceImplementation ta in input)
@@ -846,7 +851,9 @@ namespace ILRepacking
                 output.Add(new InterfaceImplementation(Import(ta.InterfaceType, context)));
             }
         }
+#endif
 
+#if NETSTANDARD
         public void CopyTypeReferences(GenericParameter genericParameter, GenericParameter nonGenericParameter, IGenericParameterProvider provider)
         {
             ICollection<TypeReference> genericParametersCollection =
@@ -864,6 +871,13 @@ namespace ILRepacking
                 new Collection<TypeReference>(nonGenericParametersCollection),
                 provider);
         }
+#else
+        public void CopyTypeReferences(GenericParameter genericParameter, GenericParameter nonGenericParameter, IGenericParameterProvider provider)
+        {
+            CopyTypeReferences(genericParameter.Constraints, nonGenericParameter.Constraints, provider);
+        }
+#endif
+
 
         public CustomAttributeArgument Copy(CustomAttributeArgument arg, IGenericParameterProvider context)
         {

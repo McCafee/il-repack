@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="ILRepacker" Condition="'$(Configuration)' == 'Release'" AfterTargets="Build">
+  <Target Name="ILRepacker" Condition="$(Configuration) == 'Release'" AfterTargets="Build">
 
     <ItemGroup>
-      <InputAssemblies Include="$(OutputPath)\ILRepack.dll" />
+      <InputAssemblies Condition="'$(TargetFramework)' == 'netstandard2.0'" Include="$(OutputPath)\ILRepack.dll" />
+      <InputAssemblies Condition="'$(TargetFramework)' == 'net40'" Include="$(OutputPath)\ILRepack.exe" />
       <InputAssemblies Include="$(OutputPath)\BamlParser.dll" />
       <InputAssemblies Include="$(OutputPath)\Fasterflect.Netstandard.dll" />
-      <InputAssemblies Include="$(OutputPath)\Mono.Posix.dll" />
-      <!-- <InputAssemblies Include="$(OutputPath)\Mono.Cecil.dll" /> -->
-      <!-- <InputAssemblies Include="$(OutputPath)\Mono.Cecil.Pdb.dll" /> -->
+      <!-- <InputAssemblies Include="$(OutputPath)\Mono.Posix.dll" /> -->
+      <InputAssemblies Include="$(OutputPath)\Mono.Cecil.dll" />
+      <InputAssemblies Include="$(OutputPath)\Mono.Cecil.Pdb.dll" />
       <!-- <InputAssemblies Include="$(OutputPath)\Mono.Cecil.Mdb.dll" /> -->
       <!-- <InputAssemblies Include="$(OutputPath)\Mono.Cecil.Rocks.dll" /> -->
 
