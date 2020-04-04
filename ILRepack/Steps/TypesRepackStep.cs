@@ -68,10 +68,7 @@ namespace ILRepacking.Steps
                 _repackImporter.Import(r, _repackContext.TargetAssemblyMainModule.Types, false);
             }
 
-
-            var yy = _repackContext.OtherAssemblies.SelectMany(x => x.Modules).SelectMany(m => m.Types);
-
-            foreach (var r in yy)
+            foreach (var r in _repackContext.OtherAssemblies.SelectMany(x => x.Modules).SelectMany(m => m.Types))
             {
                 _logger.Verbose($"- Importing {r} from {r.Module}");
                 _repackImporter.Import(r, _repackContext.TargetAssemblyMainModule.Types, ShouldInternalize(r.FullName));

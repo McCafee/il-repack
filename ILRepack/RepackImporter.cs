@@ -451,8 +451,18 @@ namespace ILRepacking
             {
                 nb.Variables.Add(new VariableDefinition(Import(var.VariableType, parent)));
             }
+#if !NETSTANDARD
+            foreach (VariableDefinition var in body.Variables)
+                nb.Variables.Add(new VariableDefinition(var.Name,
+                    Import(var.VariableType, parent)));
+            nb.Instructions.SetCapacity(body.Instructions.Count);
 
+#else
+            foreach (VariableDefinition var in body.Variables)
+                nb.Variables.Add(new VariableDefinition(Import(var.VariableType, parent)));
             nb.Instructions.Capacity = body.Instructions.Count;
+#endif
+
             _repackContext.LineIndexer.PreMethodBodyRepack(body, parent);
             foreach (Instruction instr in body.Instructions)
             {
@@ -551,7 +561,9 @@ namespace ILRepacking
                         default:
                             throw new InvalidOperationException();
                     }
-
+#if !NETSTANDARD
+                ni.SequencePoint = instr.SequencePoint;
+#endif
                 nb.Instructions.Add(ni);
             }
             _repackContext.LineIndexer.PostMethodBodyRepack(parent);
@@ -766,7 +778,11 @@ namespace ILRepacking
                 output.Add(ngp);
             }
             // delay copy to ensure all generics parameters are already present
+#if !NETSTANDARD
+            Copy(input, output, (gp, ngp) => CopyTypeReferences(gp.Constraints, ngp.Constraints, nt));
+#else 
             Copy(input, output, (gp, ngp) => CopyTypeReferences(gp, ngp, nt));
+#endif
             Copy(input, output, (gp, ngp) => CopyCustomAttributes(gp.CustomAttributes, ngp.CustomAttributes, nt));
         }
 
@@ -851,9 +867,7 @@ namespace ILRepacking
                 output.Add(new InterfaceImplementation(Import(ta.InterfaceType, context)));
             }
         }
-#endif
 
-#if NETSTANDARD
         public void CopyTypeReferences(GenericParameter genericParameter, GenericParameter nonGenericParameter, IGenericParameterProvider provider)
         {
             ICollection<TypeReference> genericParametersCollection =
@@ -870,11 +884,6 @@ namespace ILRepacking
                 new Collection<TypeReference>(genericParametersCollection),
                 new Collection<TypeReference>(nonGenericParametersCollection),
                 provider);
-        }
-#else
-        public void CopyTypeReferences(GenericParameter genericParameter, GenericParameter nonGenericParameter, IGenericParameterProvider provider)
-        {
-            CopyTypeReferences(genericParameter.Constraints, nonGenericParameter.Constraints, provider);
         }
 #endif
 

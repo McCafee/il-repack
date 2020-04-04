@@ -192,8 +192,6 @@ namespace ILRepacking
 
         private void FixPlatformVersion(GenericParameter gp)
         {
-
-
 #if !NETSTANDARD
              if (gp.HasConstraints)
                 foreach (TypeReference tr in gp.Constraints)

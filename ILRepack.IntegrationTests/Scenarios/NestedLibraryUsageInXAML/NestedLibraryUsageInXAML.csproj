@@ -105,7 +105,7 @@
 del /q $(ProjectDir)\obj\$(ConfigurationName)\*.*
 
 mkdir $(TargetDir)\merged
-$(SolutionDir)ILRepack\bin\$(ConfigurationName)\ILRepack.exe /verbose /log /out:$(TargetDir)\merged\$(TargetFileName) $(TargetPath) $(TargetDir)AnotherClassLibrary.dll $(TargetDir)ClassLibrary.dll $(TargetDir)Microsoft.Threading.Tasks.dll $(TargetDir)Microsoft.Threading.Tasks.Extensions.Desktop.dll $(TargetDir)Microsoft.Threading.Tasks.Extensions.dll 
+$(SolutionDir)ILRepack\bin\$(ConfigurationName)\net40\ILRepack.exe /verbose /log /out:$(TargetDir)\merged\$(TargetFileName) $(TargetPath) $(TargetDir)AnotherClassLibrary.dll $(TargetDir)ClassLibrary.dll $(TargetDir)Microsoft.Threading.Tasks.dll $(TargetDir)Microsoft.Threading.Tasks.Extensions.Desktop.dll $(TargetDir)Microsoft.Threading.Tasks.Extensions.dll 
 
 exit /b %25ERRORLEVEL%25
 </PostBuildEvent>

@@ -62,4 +62,10 @@
     <ProjectReference Include="..\cecil\symbols\mdb\Mono.Cecil.Mdb.csproj" />
     <ProjectReference Include="..\cecil\symbols\pdb\Mono.Cecil.Pdb.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\Microsoft.CSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

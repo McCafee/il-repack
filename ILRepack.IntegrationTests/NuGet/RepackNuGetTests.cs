@@ -137,7 +137,6 @@ namespace ILRepack.IntegrationTests.NuGet
         }
 
         [Test]
-        [Ignore("Disabled because of the location SourceLink package")]
         [Platform(Include = "win")]
         public void VerifiesMergedPdbKeepSourceIndexationForHttpIndexation()
         {

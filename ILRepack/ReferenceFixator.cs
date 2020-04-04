@@ -70,7 +70,11 @@ namespace ILRepacking
                 if (!fixedGenericParameters.Contains(genPar))
                 {
                     fixedGenericParameters.Add(genPar);
+#if !NETSTANDARD
+                    FixReferences(genPar.Constraints);
+#else
                     FixReferences(genPar);
+#endif
                     FixReferences(genPar.CustomAttributes);
                 }
                 return type;
