@@ -38,7 +38,7 @@
     <Description>Modified original ILRepack by changing functionality for using ModuleDefinitions instead of file names to repack assemblies.</Description>
     <Copyright>Copyright © Francois Valdy 2011</Copyright>
     <Tags>assemblies, ILRepack, merge assemblies</Tags>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>ILRepack.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ApplicationIcon />
