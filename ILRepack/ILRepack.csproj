@@ -18,39 +18,39 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <NoWarn>NU1701;</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-     <DebugType>Full</DebugType>
+     <DebugType>PdbOnly</DebugType>
     <WarningsAsErrors />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Nuget|AnyCPU'">
     <NoWarn>NU1701;</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>Full</DebugType>
+    <DebugType>None</DebugType>
     <WarningsAsErrors />
   </PropertyGroup>
 
   <PropertyGroup>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-    <PackageId>ILRepack.Lib.NetStandard</PackageId>
-    <Authors>Dzianis Zhukouski, Tetiana Kashkarova, Artsiom Selianik</Authors>
+    <PackageId>ILRepack.Lib.NET</PackageId>
+    <Authors>Francois Valdy, Dzianis Zhukouski, Tetiana Kashkarova, Artsiom Selianik</Authors>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Modified original ILRepack by changing functionality for using ModuleDefinitions instead of file names to repack assemblies.</Description>
     <Copyright>Copyright © Francois Valdy 2011</Copyright>
     <Tags>assemblies, ILRepack, merge assemblies</Tags>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ILRepack.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject>ILRepacking.Application</StartupObject>
-  
+    <PackageVersion>2.0.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Condition="$(TargetFramework)=='netstandard2.0'" Include="FodyHelpers" Version="6.1.1" />
     <PackageReference Include="BamlParser" Version="1.0.0" />
     <PackageReference Include="Fasterflect.Netstandard" Version="1.*" />
-    <PackageReference Condition="$(TargetFramework)=='netstandard2.0'" Include="FodyHelpers" Version="6.1.1" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
     <PackageReference Include="SourceLink" Version="1.1.0" />
   </ItemGroup>
