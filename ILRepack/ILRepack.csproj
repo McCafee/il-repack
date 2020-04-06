@@ -6,6 +6,7 @@
     <RootNamespace>ILRepacking</RootNamespace>
     <AssemblyName>ILRepack</AssemblyName>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Configurations>Debug;Release;Nuget</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,6 +19,13 @@
     <NoWarn>NU1701;</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
      <DebugType>Full</DebugType>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Nuget|AnyCPU'">
+    <NoWarn>NU1701;</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>Full</DebugType>
     <WarningsAsErrors />
   </PropertyGroup>
 
