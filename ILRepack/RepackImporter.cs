@@ -206,6 +206,11 @@ namespace ILRepacking
                 }
             }
 
+            if (_options.MoveMergedTypesToNewNamespace)
+            {
+                nt.Namespace = $"{_repackContext.TargetAssemblyMainModule.Assembly.Name.Name}.{type.Namespace}";
+            }
+
             if (internalize && _options.RenameInternalized && !IsModuleTag(nt))
             {
                 string newName = GenerateName(nt);
@@ -443,14 +448,30 @@ namespace ILRepacking
             nb.LocalVarToken = body.LocalVarToken;
 
             foreach (VariableDefinition var in body.Variables)
+            {
+                nb.Variables.Add(new VariableDefinition(Import(var.VariableType, parent)));
+            }
+#if !NETSTANDARD
+            foreach (VariableDefinition var in body.Variables)
                 nb.Variables.Add(new VariableDefinition(var.Name,
                     Import(var.VariableType, parent)));
-
             nb.Instructions.SetCapacity(body.Instructions.Count);
+
+#else
+            foreach (VariableDefinition var in body.Variables)
+                nb.Variables.Add(new VariableDefinition(Import(var.VariableType, parent)));
+            nb.Instructions.Capacity = body.Instructions.Count;
+#endif
+
             _repackContext.LineIndexer.PreMethodBodyRepack(body, parent);
             foreach (Instruction instr in body.Instructions)
             {
+#if !NETSTANDARD
                 _repackContext.LineIndexer.ProcessMethodBodyInstruction(instr);
+#else
+                SequencePoint seqPoint = parent.DebugInformation.GetSequencePoint(instr);
+                _repackContext.LineIndexer.ProcessMethodBodyInstruction(instr, seqPoint);
+#endif
 
                 Instruction ni;
 
@@ -540,7 +561,9 @@ namespace ILRepacking
                         default:
                             throw new InvalidOperationException();
                     }
+#if !NETSTANDARD
                 ni.SequencePoint = instr.SequencePoint;
+#endif
                 nb.Instructions.Add(ni);
             }
             _repackContext.LineIndexer.PostMethodBodyRepack(parent);
@@ -755,7 +778,11 @@ namespace ILRepacking
                 output.Add(ngp);
             }
             // delay copy to ensure all generics parameters are already present
+#if !NETSTANDARD
             Copy(input, output, (gp, ngp) => CopyTypeReferences(gp.Constraints, ngp.Constraints, nt));
+#else 
+            Copy(input, output, (gp, ngp) => CopyTypeReferences(gp, ngp, nt));
+#endif
             Copy(input, output, (gp, ngp) => CopyCustomAttributes(gp.CustomAttributes, ngp.CustomAttributes, nt));
         }
 
@@ -831,6 +858,35 @@ namespace ILRepacking
                 output.Add(Import(ta, context));
             }
         }
+
+#if NETSTANDARD
+        public void CopyTypeReferences(Collection<InterfaceImplementation> input, Collection<InterfaceImplementation> output, IGenericParameterProvider context)
+        {
+            foreach (InterfaceImplementation ta in input)
+            {
+                output.Add(new InterfaceImplementation(Import(ta.InterfaceType, context)));
+            }
+        }
+
+        public void CopyTypeReferences(GenericParameter genericParameter, GenericParameter nonGenericParameter, IGenericParameterProvider provider)
+        {
+            ICollection<TypeReference> genericParametersCollection =
+                genericParameter.Constraints
+                    .Select(item => item.ConstraintType)
+                    .ToList();
+
+            ICollection<TypeReference> nonGenericParametersCollection =
+                nonGenericParameter.Constraints
+                    .Select(item => item.ConstraintType)
+                    .ToList();
+
+            CopyTypeReferences(
+                new Collection<TypeReference>(genericParametersCollection),
+                new Collection<TypeReference>(nonGenericParametersCollection),
+                provider);
+        }
+#endif
+
 
         public CustomAttributeArgument Copy(CustomAttributeArgument arg, IGenericParameterProvider context)
         {

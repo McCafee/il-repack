@@ -21,6 +21,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+using StrongNameKeyPair = System.Reflection.StrongNameKeyPair;
+
 namespace ILRepacking.Steps
 {
     class SigningStep : IRepackStep

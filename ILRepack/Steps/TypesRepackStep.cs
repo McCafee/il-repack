@@ -61,7 +61,8 @@ namespace ILRepacking.Steps
 
             // merge types, this differs between 'primary' and 'other' assemblies regarding internalizing
 
-            foreach (var r in _repackContext.PrimaryAssemblyDefinition.Modules.SelectMany(x => x.Types))
+            foreach (var r in _repackContext.PrimaryAssemblyDefinition.Modules
+                .Where(m => m != _repackContext.TargetAssemblyMainModule).SelectMany(x => x.Types))
             {
                 _logger.Verbose($"- Importing {r} from {r.Module}");
                 _repackImporter.Import(r, _repackContext.TargetAssemblyMainModule.Types, false);
@@ -107,7 +108,7 @@ namespace ILRepacking.Steps
             foreach (var m in _repackContext.OtherAssemblies.SelectMany(x => x.Modules))
             {
                 foreach (var r in m.ExportedTypes)
-                { 
+                {
                     if (!ShouldInternalize(r.FullName) &&
                         !SkipExportedType(r))
                     {

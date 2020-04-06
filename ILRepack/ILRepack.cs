@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using ILRepacking.Steps;
 using Mono.Cecil;
 using Mono.Cecil.PE;
-using Mono.Unix.Native;
 using ILRepacking.Mixins;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
@@ -255,6 +254,7 @@ namespace ILRepacking
         /// </summary>
         public void Repack()
         {
+
             var timer = new Stopwatch();
             timer.Start();
             Options.Validate();
@@ -309,7 +309,9 @@ namespace ILRepacking
             }
             // set the main module attributes
             TargetAssemblyMainModule.Attributes = PrimaryAssemblyMainModule.Attributes;
+#if !NETSTANDARD
             TargetAssemblyMainModule.Win32ResourceDirectory = MergeWin32Resources(PrimaryAssemblyMainModule.Win32ResourceDirectory);
+#endif
 
             if (Options.Version != null)
                 TargetAssemblyDefinition.Name.Version = Options.Version;
@@ -339,8 +341,10 @@ namespace ILRepacking
 
                 var parameters = new WriterParameters
                 {
+#if !NETSTANDARD
                     StrongNameKeyPair = signingStep.KeyPair,
-                    WriteSymbols = Options.DebugInfo
+#endif
+                    WriteSymbols = Options.DebugInfo,
                 };
                 // create output directory if it does not exist
                 var outputDir = Path.GetDirectoryName(Options.OutputFile);
@@ -357,13 +361,7 @@ namespace ILRepacking
                 Logger.Info("Writing output assembly to disk");
                 // If this is an executable and we are on linux/osx we should copy file permissions from
                 // the primary assembly
-                if (isUnixEnvironment)
-                {
-                    Stat stat;
-                    Logger.Info("Copying permissions from " + PrimaryAssemblyFile);
-                    Syscall.stat(PrimaryAssemblyFile, out stat);
-                    Syscall.chmod(Options.OutputFile, stat.st_mode);
-                }
+                
                 if (hadStrongName && !TargetAssemblyDefinition.Name.HasPublicKey)
                     Options.StrongNameLost = true;
 
@@ -374,6 +372,54 @@ namespace ILRepacking
             }
 
             Logger.Info($"Finished in {timer.Elapsed}");
+        }
+
+        /// <summary>
+        /// The actual repacking process, called by main after parsing arguments.
+        /// When referencing this assembly, call this after setting the merge properties.
+        /// Skips SourceServerData step.
+        /// </summary>
+        public void Repack(ModuleDefinition primaryModuleDefinition, IList<ModuleDefinition> modulesToMerge)
+        {
+            // System.Diagnostics.Debugger.Launch();
+            
+            TargetAssemblyDefinition = primaryModuleDefinition.Assembly;
+            PrimaryAssemblyDefinition = primaryModuleDefinition.Assembly;
+            MergedAssemblies = new List<AssemblyDefinition>(modulesToMerge.Select(m => m.Assembly))
+            {
+                primaryModuleDefinition.Assembly
+            };
+
+            GlobalAssemblyResolver.RegisterAssemblies(MergedAssemblies);
+            OtherAssemblies = new List<AssemblyDefinition>(modulesToMerge.Select(m => m.Assembly));
+
+            _reflectionHelper = new ReflectionHelper(this);
+            _platformFixer = new PlatformFixer(this, PrimaryAssemblyMainModule.Runtime);
+            _mappingHandler = new MappingHandler();
+
+            // set the main module attributes
+            TargetAssemblyMainModule.Attributes = PrimaryAssemblyMainModule.Attributes;
+
+            if (Options.Version != null)
+                TargetAssemblyDefinition.Name.Version = Options.Version;
+
+            _lineIndexer = new IKVMLineIndexer(this, Options.LineIndexation);
+
+            List<IRepackStep> repackSteps = new List<IRepackStep>
+            {
+                new SigningStep(this, Options),
+                new ReferencesRepackStep(Logger, this),
+                new TypesRepackStep(Logger, this, _repackImporter, Options),
+                new ResourcesRepackStep(Logger, this, Options),
+                new AttributesRepackStep(Logger, this, _repackImporter, Options),
+                new ReferencesFixStep(Logger, this, _repackImporter, Options),
+                new XamlResourcePathPatcherStep(Logger, this)
+            };
+
+            foreach (var step in repackSteps)
+            {
+                step.Perform();
+            }
         }
 
         private ISourceServerDataRepackStep GetSourceServerDataStep(bool isUnixEnvironment)
@@ -401,6 +447,8 @@ namespace ILRepacking
                     GlobalAssemblyResolver.AddSearchDirectory(facadesDirectory);
             }
         }
+
+#if !NETSTANDARD
 
         private ResourceDirectory MergeWin32Resources(ResourceDirectory primary)
         {
@@ -462,6 +510,8 @@ namespace ILRepacking
         {
             return exist.Id == 0 && parents.Count == 2 && parents[0].Id == 16 && parents[1].Id == 1;
         }
+#endif
+
 
         string IRepackContext.FixStr(string content)
         {

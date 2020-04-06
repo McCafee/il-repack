@@ -36,6 +36,16 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Nuget|AnyCPU'">
+    <OutputPath>bin\Nuget\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -84,12 +94,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir $(TargetDir)\merged
-$(SolutionDir)ILRepack\bin\$(ConfigurationName)\ILRepack.exe /verbose /log /out:$(TargetDir)\merged\$(TargetFileName) $(TargetPath) $(TargetDir)ClassLibrary.dll
-set SAVED_ERROR_LEVEL=%25ERRORLEVEL%25
-REM Ensure re-build is done every time to use latest built ILRepack version
-del /q $(ProjectDir)\obj\$(ConfigurationName)\*.*
-exit /b %25SAVED_ERROR_LEVEL%25
-</PostBuildEvent>
+    <PostBuildEvent>
+      mkdir $(TargetDir)\merged
+      $(SolutionDir)ILRepack\bin\$(ConfigurationName)\net40\ILRepack.exe /verbose /log /out:$(TargetDir)\merged\$(TargetFileName) $(TargetPath) $(TargetDir)ClassLibrary.dll
+      set SAVED_ERROR_LEVEL=%25ERRORLEVEL%25
+      REM Ensure re-build is done every time to use latest built ILRepack version
+      del /q $(ProjectDir)\obj\$(ConfigurationName)\*.*
+      exit /b %25SAVED_ERROR_LEVEL%25
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
